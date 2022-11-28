@@ -1,0 +1,28 @@
+version: '3.6'
+
+services:
+  db:
+    image: postgres:alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+
+  tournaments-api:
+    build:
+      context: .
+      args:
+        buildenv: local
+    environment:
+      ENVIRONMENT: local
+      LOG_LEVEL: DEBUG
+      DJANGO_DEBUG: "true"
+      DJANGO_LOG_LEVEL: INFO
+      DJANGO_SETTINGS_MODULE: config.settings.local
+    ports:
+      - 1337:80
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "localhost/healthcheck" ]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - .:/app
